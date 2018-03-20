@@ -58,6 +58,9 @@ vis.ftdetect.filetypes = {
 	chuck = {
 		ext = { "%.ck$" },
 	},
+	clojure = {
+		ext = { "%.clj$", "%.cljc$",  "%.cljs$", "%.edn$" }
+	},
 	cmake = {
 		ext = { "%.cmake$", "%.cmake.in$", "%.ctest$", "%.ctest.in$" },
 	},
@@ -303,6 +306,9 @@ vis.ftdetect.filetypes = {
 		ext = { "%.sc$", "%.py$", "%.pyw$" },
 		mime = { "text/x-python" },
 	},
+	reason = {
+		ext = { "%.re$" },
+	},
 	rc = {
 		ext = { "%.rc$", "%.es$" },
 	},
@@ -322,7 +328,7 @@ vis.ftdetect.filetypes = {
 		ext = { "%.R$", "%.Rout$", "%.Rhistory$", "%.Rt$", "Rout.save", "Rout.fail" },
 	},
 	ruby = {
-		ext = { "%.Rakefile$", "%.rake$", "%.rb$", "%.rbw$" },
+		ext = { "%.Rakefile$", "%.rake$", "%.rb$", "%.rbw$", "^Vagrantfile$" },
 		mime = { "text/x-ruby" },
 	},
 	rust = {
@@ -338,7 +344,7 @@ vis.ftdetect.filetypes = {
 		mime = { "text/x-scala" },
 	},
 	scheme = {
-		ext = { "%.sch$", "%.scm$", "%.sld$" },
+		ext = { "%.sch$", "%.scm$", "%.sld$", "%.sls$", "%.ss$" },
 	},
 	smalltalk = {
 		ext = { "%.changes$", "%.st$", "%.sources$" },
@@ -411,7 +417,7 @@ vis.ftdetect.filetypes = {
 		ext = {"%.xtend$" },
 	},
 	yaml = {
-		ext = { "%.yaml$" },
+		ext = { "%.yaml$", "%.yml$" },
 		mime = { "text/x-yaml" },
 	},
 }

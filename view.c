@@ -352,6 +352,7 @@ void view_draw(View *view) {
 			/* ok, we encountered an invalid multibyte sequence,
 			 * replace it with the Unicode Replacement Character
 			 * (FFFD) and skip until the start of the next utf8 char */
+			mbstate = (mbstate_t){0};
 			for (len = 1; rem > len && !ISUTF8(cur[len]); len++);
 			cell = (Cell){ .data = "\xEF\xBF\xBD", .len = len, .width = 1 };
 		} else if (len == (size_t)-2) {
@@ -359,7 +360,7 @@ void view_draw(View *view) {
 			 * wide character. advance file position and read
 			 * another junk into buffer.
 			 */
-			rem = text_bytes_get(view->text, pos, size, text);
+			rem = text_bytes_get(view->text, pos+prev_cell.len, size, text);
 			text[rem] = '\0';
 			cur = text;
 			continue;
@@ -378,9 +379,9 @@ void view_draw(View *view) {
 				cell.width = 1;
 		}
 
-		if (cell.width == 0 && prev_cell.len + cell.len < sizeof(cell.data)) {
+		if (cell.width == 0) {
+			strncat(prev_cell.data, cell.data, sizeof(prev_cell.data)-strlen(prev_cell.data)-1);
 			prev_cell.len += cell.len;
-			strcat(prev_cell.data, cell.data);
 		} else {
 			if (prev_cell.len && !view_addch(view, &prev_cell))
 				break;

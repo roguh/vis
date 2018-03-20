@@ -304,10 +304,11 @@ enum {
 	VIS_ACTION_TEXT_OBJECT_LONGWORD_INNER,
 	VIS_ACTION_TEXT_OBJECT_SENTENCE,
 	VIS_ACTION_TEXT_OBJECT_PARAGRAPH,
+	VIS_ACTION_TEXT_OBJECT_PARAGRAPH_OUTER,
 	VIS_ACTION_TEXT_OBJECT_SQUARE_BRACKET_OUTER,
 	VIS_ACTION_TEXT_OBJECT_SQUARE_BRACKET_INNER,
-	VIS_ACTION_TEXT_OBJECT_PARANTHESE_OUTER,
-	VIS_ACTION_TEXT_OBJECT_PARANTHESE_INNER,
+	VIS_ACTION_TEXT_OBJECT_PARENTHESIS_OUTER,
+	VIS_ACTION_TEXT_OBJECT_PARENTHESIS_INNER,
 	VIS_ACTION_TEXT_OBJECT_ANGLE_BRACKET_OUTER,
 	VIS_ACTION_TEXT_OBJECT_ANGLE_BRACKET_INNER,
 	VIS_ACTION_TEXT_OBJECT_CURLY_BRACKET_OUTER,
@@ -1118,6 +1119,11 @@ static const KeyAction vis_action[] = {
 		VIS_HELP("A paragraph")
 		textobj, { .i = VIS_TEXTOBJECT_PARAGRAPH }
 	},
+	[VIS_ACTION_TEXT_OBJECT_PARAGRAPH_OUTER] = {
+		"vis-textobject-paragraph-outer",
+		VIS_HELP("A paragraph (outer variant)")
+		textobj, { .i = VIS_TEXTOBJECT_PARAGRAPH_OUTER }
+	},
 	[VIS_ACTION_TEXT_OBJECT_SQUARE_BRACKET_OUTER] = {
 		"vis-textobject-square-bracket-outer",
 		VIS_HELP("[] block (outer variant)")
@@ -1128,15 +1134,15 @@ static const KeyAction vis_action[] = {
 		VIS_HELP("[] block (inner variant)")
 		textobj, { .i = VIS_TEXTOBJECT_INNER_SQUARE_BRACKET }
 	},
-	[VIS_ACTION_TEXT_OBJECT_PARANTHESE_OUTER] = {
+	[VIS_ACTION_TEXT_OBJECT_PARENTHESIS_OUTER] = {
 		"vis-textobject-parentheses-outer",
 		VIS_HELP("() block (outer variant)")
-		textobj, { .i = VIS_TEXTOBJECT_OUTER_PARANTHESE }
+		textobj, { .i = VIS_TEXTOBJECT_OUTER_PARENTHESIS }
 	},
-	[VIS_ACTION_TEXT_OBJECT_PARANTHESE_INNER] = {
+	[VIS_ACTION_TEXT_OBJECT_PARENTHESIS_INNER] = {
 		"vis-textobject-parentheses-inner",
 		VIS_HELP("() block (inner variant)")
-		textobj, { .i = VIS_TEXTOBJECT_INNER_PARANTHESE }
+		textobj, { .i = VIS_TEXTOBJECT_INNER_PARENTHESIS }
 	},
 	[VIS_ACTION_TEXT_OBJECT_ANGLE_BRACKET_OUTER] = {
 		"vis-textobject-angle-bracket-outer",
@@ -2176,6 +2182,7 @@ static const char *wscroll(Vis *vis, const char *keys, const Arg *arg) {
 			view_scroll_down(view, count);
 		break;
 	}
+	vis_count_set(vis, VIS_COUNT_UNKNOWN);
 	return keys;
 }
 
@@ -2188,6 +2195,7 @@ static const char *wslide(Vis *vis, const char *keys, const Arg *arg) {
 		view_slide_down(view, count);
 	else
 		view_slide_up(view, count);
+	vis_count_set(vis, VIS_COUNT_UNKNOWN);
 	return keys;
 }
 

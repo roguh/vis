@@ -199,6 +199,7 @@ int text_line_width_get(Text *txt, size_t pos) {
 		wchar_t wc;
 		size_t wclen = mbrtowc(&wc, buf, len, &ps);
 		if (wclen == (size_t)-1 && errno == EILSEQ) {
+			ps = (mbstate_t){0};
 			/* assume a replacement symbol will be displayed */
 			width++;
 		} else if (wclen == (size_t)-2) {
@@ -236,6 +237,7 @@ size_t text_line_width_set(Text *txt, size_t pos, int width) {
 		wchar_t wc;
 		size_t wclen = mbrtowc(&wc, buf, len, &ps);
 		if (wclen == (size_t)-1 && errno == EILSEQ) {
+			ps = (mbstate_t){0};
 			/* assume a replacement symbol will be displayed */
 			cur_width++;
 		} else if (wclen == (size_t)-2) {
@@ -446,19 +448,17 @@ size_t text_paragraph_next(Text *txt, size_t pos) {
 	char c;
 	Iterator it = text_iterator_get(txt, pos);
 
-	while (text_iterator_byte_get(&it, &c) && c == '\n')
+	while (text_iterator_byte_get(&it, &c) && (c == '\n' || blank(c)))
 		text_iterator_char_next(&it, NULL);
-	return text_line_empty_next(txt, it.pos);
+	return text_line_blank_next(txt, it.pos);
 }
 
 size_t text_paragraph_prev(Text *txt, size_t pos) {
 	char c;
 	Iterator it = text_iterator_get(txt, pos);
 
-	/* c == \0 catches starting the search at EOF */
-	while (text_iterator_byte_get(&it, &c) && (c == '\n' || c == '\0'))
-		text_iterator_byte_prev(&it, NULL);
-	return text_line_empty_prev(txt, it.pos);
+	while (text_iterator_byte_prev(&it, &c) && (c == '\n' || blank(c)));
+	return text_line_blank_prev(txt, it.pos);
 }
 
 size_t text_line_empty_next(Text *txt, size_t pos) {
@@ -481,6 +481,29 @@ size_t text_line_empty_prev(Text *txt, size_t pos) {
 	return it.pos;
 }
 
+size_t text_line_blank_next(Text *txt, size_t pos) {
+	char c;
+	Iterator it = text_iterator_get(txt, pos);
+	while (text_iterator_byte_find_next(&it, '\n')) {
+		size_t n = it.pos;
+		while (text_iterator_byte_next(&it, &c) && blank(c));
+		if (c == '\n')
+			return n + 1;
+	}
+	return it.pos;
+}
+
+size_t text_line_blank_prev(Text *txt, size_t pos) {
+	char c;
+	Iterator it = text_iterator_get(txt, pos);
+	while (text_iterator_byte_find_prev(&it, '\n')) {
+		while (text_iterator_byte_prev(&it, &c) && blank(c));
+		if (c == '\n')
+			return it.pos + 1;
+	}
+	return it.pos;
+}
+
 size_t text_block_start(Text *txt, size_t pos) {
 	Filerange r = text_object_curly_bracket(txt, pos-1);
 	return text_range_valid(&r) ? r.start-1 : pos;
@@ -492,12 +515,12 @@ size_t text_block_end(Text *txt, size_t pos) {
 }
 
 size_t text_parenthese_start(Text *txt, size_t pos) {
-	Filerange r = text_object_paranthese(txt, pos-1);
+	Filerange r = text_object_parenthesis(txt, pos-1);
 	return text_range_valid(&r) ? r.start-1 : pos;
 }
 
 size_t text_parenthese_end(Text *txt, size_t pos) {
-	Filerange r = text_object_paranthese(txt, pos+1);
+	Filerange r = text_object_parenthesis(txt, pos+1);
 	return text_range_valid(&r) ? r.end : pos;
 }
 
