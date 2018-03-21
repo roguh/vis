@@ -262,6 +262,10 @@ vis.ftdetect.filetypes = {
 		ext = { "%.m$", "%.mm$", "%.objc$" },
 		mime = { "text/x-objc" },
 	},
+	org = {
+		ext = { "%.org$" },
+		mime = { "text/x-org", "text/org" },
+	},
 	pascal = {
 		ext = { "%.dpk$", "%.dpr$", "%.p$", "%.pas$" },
 	},
